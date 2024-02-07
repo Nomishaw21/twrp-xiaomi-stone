@@ -51,15 +51,15 @@ jobs:
     - name: Clone Device Tree
       run: |
         cd ${GITHUB_WORKSPACE}/workspace
-        git clone https://github.com/Nomishaw21/device_xiaomi_twrp.git ./device/xiaomi/moonstone
+        git clone https://github.com/Nomishaw21/device_xiaomi_stone_twrp.git ./device/xiaomi/stone
     - name: Building
       run: |
         cd ${GITHUB_WORKSPACE}/workspace
         source build/envsetup.sh
-        lunch twrp_moonstone-eng
+        lunch twrp_stone-eng
         mka bootimage -j$(nproc --all)
     - name: Upload Artifact
       uses: actions/upload-artifact@v3
       with:
-        name: moonstone_twrp-13
-        path: workspace/out/target/product/moonstone/boot.im
+        name: stone_twrp-14
+        path: workspace/out/target/product/stone/boot.img
