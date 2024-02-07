@@ -124,6 +124,7 @@ BOARD_QTI_DYNAMIC_PARTITIONS_SIZE := 9122611200 # BOARD_SUPER_PARTITION_SIZE - 4
 # System as root
 BOARD_ROOT_EXTRA_FOLDERS := bluetooth dsp firmware persist
 BOARD_SUPPRESS_SECURE_ERASE := true
+BOARD_USES_USB_OTG := true
 
 # File systems
 TARGET_USERIMAGES_USE_EXT4 := true
@@ -150,6 +151,10 @@ TW_INCLUDE_CRYPTO := true
 TW_INCLUDE_CRYPTO_FBE := true
 TW_INCLUDE_FBE_METADATA_DECRYPT := true
 TW_USE_FSCRYPT_POLICY := 2
+
+# Haptic
+TW_SUPPORT_INPUT_AIDL_HAPTICS := true
+TW_SUPPORT_INPUT_AIDL_HAPTICS_FQNAME := "IVibrator/vibratorfeature"
 			     
 # TWRP specific build flags
 TW_THEME := portrait_hdpi
@@ -171,9 +176,10 @@ TW_INCLUDE_RESETPROP := true
 TW_INCLUDE_LIBRESETPROP := true
 TW_FRAMERATE := 60
 TW_LOAD_VENDOR_MODULES := "adsp_loader_dlkm.ko"
-TW_CUSTOM_CPU_TEMP_PATH := "/sys/class/thermal/thermal_zone20/temp"
+TW_CUSTOM_CPU_TEMP_PATH := "/sys/class/thermal/thermal_zone30/temp"
 TW_BATTERY_SYSFS_WAIT_SECONDS := 5
 TW_BACKUP_EXCLUSIONS := /data/fonts
+TW_INCLUDE_USB_OTG := true
 
 # Ofox flags
 FOX_VIRTUAL_AB_DEVICE := 1
