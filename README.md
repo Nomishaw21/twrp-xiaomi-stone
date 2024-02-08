@@ -26,3 +26,4 @@ The Poco X5 5G (codenamed "moonstone") is a High-range smartphone from Xiaomi. I
 ## Device picture
 
 ![Xiaomi 12 Lite ](https://fdn2.gsmarena.com/vv/pics/xiaomi/xiaomi-poco-x5-5g-1.jpg)
+# twrp-xiaomi-stone
