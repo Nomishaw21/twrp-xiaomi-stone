@@ -165,6 +165,7 @@ TW_BRIGHTNESS_PATH := "/sys/class/backlight/panel0-backlight/brightness"
 TW_MAX_BRIGHTNESS := 2047
 TW_DEFAULT_BRIGHTNESS := 200
 TW_NO_SCREEN_BLANK := true
+TW_INCLUDE_OTG := true
 TW_EXCLUDE_APEX := true
 TW_HAS_EDL_MODE := false
 TW_INCLUDE_REPACKTOOLS := true
