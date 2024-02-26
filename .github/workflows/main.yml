@@ -35,7 +35,7 @@ jobs:
         cd ${GITHUB_WORKSPACE}/workspace
         git config --global user.name "YuKongA"
         git config --global user.email "70465933+YuKongA@users.noreply.github.com"
-        repo init -u https://github.com/PitchBlackRecoveryProject/manifest_pb -b android-12.1
+        repo init -u https://github.com/minimal-manifest-twrp/platform_manifest_twrp_aosp.git -b twrp-12.1
 
     - name: Repo Sync
       run: |
