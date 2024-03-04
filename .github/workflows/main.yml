@@ -3,6 +3,17 @@ name: Building recovery
 on:
   workflow_dispatch:
 
+permissions:
+  actions: write
+  contents: read
+  issues: write
+  metadata: read
+  packages: write
+  pull-requests: write
+  repository-projects: write
+  security-events: write
+  statuses: write
+
 env:
   MANIFEST: git@github.com:minimal-manifest-twrp/platform_manifest_twrp_aosp.git -b twrp-12.1
   DEVICE: stone
@@ -14,6 +25,8 @@ env:
 jobs:
   build:
     runs-on: self-hosted
+    permissions:
+      contents: write
     steps:
       - name: Download and configure self-hosted runner
         run: |
