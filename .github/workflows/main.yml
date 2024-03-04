@@ -1,5 +1,4 @@
 name: Building recovery
-name: Building recovery
 
 on:
   workflow_dispatch:
