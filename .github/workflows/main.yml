@@ -24,10 +24,6 @@ jobs:
           ./config.sh --url https://github.com/Nomishaw21/twrp-xiaomi-stone --token A2TYKPGQ467K764MSCZC7UDF4VZUC
           ./run.sh
 
-    steps:
-       - name: Checkout
-         uses: actions/checkout@master
-         
        - name: Initializing environment
          run: |
             sudo rm -rf /usr/share/dotnet /etc/mysql /etc/php /etc/apt/sources.list.d
