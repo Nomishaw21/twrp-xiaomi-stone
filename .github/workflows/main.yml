@@ -1,77 +1,63 @@
-name: Building recovery
+name: Make TWRP
 
 on:
   workflow_dispatch:
 
-permissions:
-  actions: write
-  issues: write
-  packages: write
-  repository-projects: write
-  security-events: write
-  statuses: write
-
-env:
-  MANIFEST: git@github.com:minimal-manifest-twrp/platform_manifest_twrp_aosp.git -b twrp-12.1
-  DEVICE: stone
-  DT_LINK: https://github.com/Nomishaw21/twrp-xiaomi-stone
-  DT_PATH: device/xiaomi/stone
-  TARGET: bootimage
-  OUTPUT: boot.img
-
 jobs:
   build:
-    runs-on: self-hosted
-    permissions:
-      contents: write
+    runs-on: ubuntu-latest
     steps:
-      - name: Download and configure self-hosted runner
-        run: |
-          mkdir actions-runner && cd actions-runner
-          curl -o actions-runner-linux-x64-2.313.0.tar.gz -L https://github.com/actions/runner/releases/download/v2.313.0/actions-runner-linux-x64-2.313.0.tar.gz
-          echo "56910d6628b41f99d9a1c5fe9df54981ad5d8c9e42fc14899dcc177e222e71c4  actions-runner-linux-x64-2.313.0.tar.gz" | shasum -a 256 -c
-          tar xzf ./actions-runner-linux-x64-2.313.0.tar.gz
-          ./config.sh --url https://github.com/Nomishaw21/twrp-xiaomi-stone --token A2TYKPGQ467K764MSCZC7UDF4VZUC
-          ./run.sh
-        shell: bash
-
-      - name: Initializing environment
-        run: |
-          sudo rm -rf /usr/share/dotnet /etc/mysql /etc/php /etc/apt/sources.list.d
-          docker rmi $(docker images -q)
-          sudo apt-get remove -y account-plugin-facebook account-plugin-flickr account-plugin-jabber account-plugin-salut account-plugin-twitter account-plugin-windows-live account-plugin-yahoo aisleriot brltty duplicity empathy empathy-common example-content gnome-accessibility-themes gnome-contacts gnome-mahjongg gnome-mines gnome-orca gnome-screensaver gnome-sudoku gnome-video-effects gnomine landscape-common libreoffice-avmedia-backend-gstreamer libreoffice-base-core libreoffice-calc libreoffice-common libreoffice-core libreoffice-draw libreoffice-gnome libreoffice-gtk libreoffice-impress libreoffice-math libreoffice-ogltrans libreoffice-pdfimport libreoffice-style-galaxy libreoffice-style-human libreoffice-writer libsane libsane-common mcp-account-manager-uoa python3-uno rhythmbox rhythmbox-plugins rhythmbox-plugin-zeitgeist sane-utils shotwell shotwell-common telepathy-gabble telepathy-haze telepathy-idle telepathy-indicator telepathy-logger telepathy-mission-control-5 telepathy-salut totem totem-common totem-plugins printer-driver-brlaser printer-driver-foo2zjs printer-driver-foo2zjs-common printer-driver-m2300w printer-driver-ptouch printer-driver-splix
-          git config --global user.name ""
-          git config --global user.email ""
-          sudo -E apt-get -y purge azure-cli ghc* zulu* hhvm llvm* firefox google* dotnet* powershell openjdk* mysql* php*
-          sudo -E apt-get clean
-          sudo -E apt-get -qq update
-          sudo -E apt-get -qq install bc build-essential zip curl libstdc++6 git wget python gcc clang libssl-dev repo rsync flex curl bison aria2
-          sudo curl --create-dirs -L -o /usr/local/bin/repo -O -L https://storage.googleapis.com/git-repo-downloads/repo
-          sudo chmod a+rx /usr/local/bin/repo
-        shell: bash
-
-      - uses: webfactory/ssh-agent@v0.5.4
-        with:
-          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
-
-      - name: Sync recovery source and device tree
-        run: |
-          mkdir work
-          cd work
-          repo init -u $MANIFEST --depth=1
-          repo sync -c -j4 --force-sync --no-clone-bundle --no-tags
-          git clone $DT_LINK --depth=1 --single-branch $DT_PATH
-
-      - name: Build
-        run: |
-          cd work
-          . build/envsetup.sh && lunch twrp_$DEVICE-eng && export ALLOW_MISSING_DEPENDENCIES=true && mka $TARGET
-          sudo apt update && sudo apt install -y zip
-          zip -r rec.zip /home/runner/work/Recovery-Builder/Recovery-Builder/work/out/target/product/$DEVICE/$OUTPUT
-
-      - name: Save
-        uses: actions/upload-artifact@v3
-        with:
-          name: twrp-stone_14
-          path: /home/runner/work/Recovery-Builder/Recovery-Builder/work/rec.zip
-          retention-days: 5
+    - name: Maximize Build Space
+      uses: easimon/maximize-build-space@master
+      with:
+        root-reserve-mb: 8192
+        temp-reserve-mb: 8192
+        swap-size-mb: 8192
+        remove-dotnet: 'true'
+        remove-android: 'true'
+        remove-haskell: 'true'
+        remove-codeql: 'true'
+        remove-docker-images: 'true'
+    - name: Set Variables
+      run: echo "{name}=date::$(date +%F)" >> $GITHUB_OUTPUT
+    - name: Prepare Environment
+      run: |
+        export HOME=${GITHUB_WORKSPACE}
+        cd ${GITHUB_WORKSPACE}
+        sudo apt -y install git aria2 
+        git clone https://gitlab.com/OrangeFox/misc/scripts
+        cd scripts
+        bash setup/android_build_env.sh
+        bash setup/install_android_sdk.sh || true
+    - name: Init Repo
+      run: |
+        mkdir ${GITHUB_WORKSPACE}/workspace
+        cd ${GITHUB_WORKSPACE}/workspace
+        git config --global user.name "YuKongA"
+        git config --global user.email "70465933+YuKongA@users.noreply.github.com"
+        repo init -u https://github.com/minimal-manifest-twrp/platform_manifest_twrp_aosp.git -b twrp-12.1
+    - name: Repo Sync
+      run: |
+        cd ${GITHUB_WORKSPACE}/workspace
+        repo sync -j$(nproc --all) --force-sync --no-clone-bundle --no-tags
+    - name: Repopick Patches
+      run: |
+        cd ${GITHUB_WORKSPACE}/workspace
+        source build/envsetup.sh
+        repopick 5675
+        repopick 5743
+    - name: Clone Device Tree
+      run: |
+        cd ${GITHUB_WORKSPACE}/workspace
+        git clone https://github.com/Nomishaw21/twrp-xiaomi-stone.git ./device/xiaomi/stone
+    - name: Building
+      run: |
+        cd ${GITHUB_WORKSPACE}/workspace
+        source build/envsetup.sh
+        lunch twrp_stone-eng
+        mka bootimage -j$(nproc --all)
+    - name: Upload Artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: stone_twrp-13
+        path: workspace/out/target/product/stone/recovery.img
