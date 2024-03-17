@@ -14,35 +14,27 @@ on:
       DEVICE_TREE_URL:
         description: 'DEVICE_TREE_URL'
         required: true
-        default: 'https://github.com/Burhanverse/device_xiaomi_garnet-TWRP'
+        default: 'https://github.com/Nomishaw21/twrp-xiaomi-stone'
       DEVICE_TREE_BRANCH:
         description: 'DEVICE_TREE_BRANCH'
         required: true
-        default: 'android-12.1'
+        default: '14'
       DEVICE_PATH:
         description: 'DEVICE_PATH'
         required: true
-        default: 'device/xiaomi/garnet'
-      COMMON_TREE_URL:
-        description: 'COMMON_TREE_URL'
-        required: true
-        default: 'https://github.com/Burhanverse/device_xiaomi_sm84xx-common-TWRP'
-      COMMON_PATH:
-        description: 'COMMON_PATH'
-        required: true
-        default: 'device/xiaomi/sm84xx-common'
-      DEVICE_NAME:
+        default: 'device/xiaomi/stone'
+        DEVICE_NAME:
         description: 'DEVICE_NAME'
         required: true
-        default: 'garnet'
+        default: 'stone'
       MAKEFILE_NAME:
         description: 'MAKEFILE_NAME'
         required: true
-        default: 'twrp_garnet'
+        default: 'twrp_stone'
       BUILD_TARGET:
         description: 'BUILD_TARGET'
         required: true
-        default: 'recovery'
+        default: 'bootimage'
 
 jobs:
   build:
@@ -89,15 +81,6 @@ jobs:
       run: |
         cd ${{ steps.pwd.outputs.workspace-folder }}/fox_${{ github.event.inputs.MANIFEST_BRANCH }}
         git clone ${{ github.event.inputs.DEVICE_TREE_URL }} -b ${{ github.event.inputs.DEVICE_TREE_BRANCH }} ./${{ github.event.inputs.DEVICE_PATH }}
-      working-directory: ${{ steps.pwd.outputs.workspace-folder }}
-
-    - name: Clone common tree
-      if: |
-        github.event.inputs.COMMON_TREE_URL != null
-        && github.event.inputs.COMMON_PATH != null
-      run: |
-        cd ${{ steps.pwd.outputs.workspace-folder }}/fox_${{ github.event.inputs.MANIFEST_BRANCH }}
-        git clone ${{ github.event.inputs.COMMON_TREE_URL }} -b ${{ github.event.inputs.DEVICE_TREE_BRANCH }} ./${{ github.event.inputs.COMMON_PATH }}
       working-directory: ${{ steps.pwd.outputs.workspace-folder }}
 
     - name: Set Swap Space
