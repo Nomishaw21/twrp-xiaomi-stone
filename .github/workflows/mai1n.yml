@@ -23,7 +23,7 @@ on:
         description: 'DEVICE_PATH'
         required: true
         default: 'device/xiaomi/stone'
-        DEVICE_NAME:
+      DEVICE_NAME:
         description: 'DEVICE_NAME'
         required: true
         default: 'stone'
